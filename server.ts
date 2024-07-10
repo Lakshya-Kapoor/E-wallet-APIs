@@ -7,6 +7,7 @@ const app = express();
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
 
+// Parses incoming requests with json as payload
 app.use(express.json());
 
 app.use("/auth", authRouter);
