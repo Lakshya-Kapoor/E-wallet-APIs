@@ -10,10 +10,14 @@ export interface Wallet {
 }
 
 export interface User {
-  readonly user_id: number;
-  readonly name_of_user: string;
+  readonly user_name: string;
   readonly wallet_id: number;
-  readonly phoneNo: number;
-  readonly password: string;
+  readonly phone_no: number;
+  readonly user_password: string;
   readonly balance?: number;
+}
+
+export interface Payment {
+  readonly amount: number;
+  readonly receiver_phone_no: number;
 }
