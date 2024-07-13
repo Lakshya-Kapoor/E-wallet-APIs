@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import { isAuthenticated } from "../middleware/authMiddleware";
 import reqBodyValidation from "../middleware/requestBodyValidation";
-import { paymentSchema } from "../schemas/reqBodySchemas";
+import { paymentSchema } from "../utils/reqBodySchemas";
 import {
   getUserBalance,
   payUser,

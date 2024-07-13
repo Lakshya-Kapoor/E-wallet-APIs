@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import reqBodyValidation from "../middleware/requestBodyValidation";
-import { signUpSchema, logInSchema } from "../schemas/reqBodySchemas";
+import { signUpSchema, logInSchema } from "../utils/reqBodySchemas";
 import { signUpUser, logInUser } from "../controllers/authController";
 
 import dotenv from "dotenv";

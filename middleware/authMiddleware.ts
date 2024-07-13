@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { customError } from "../utils/customError";
 
 dotenv.config();
 
@@ -13,11 +14,11 @@ export function isAuthenticated(
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).send("Authorization header missing");
+    next(new customError(401, "Authorization header missing"));
   } else {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
       if (err) {
-        res.status(403).send("Invalid JWT token");
+        next(new customError(403, "Invalid JWT token"));
       } else {
         req.user = user;
         next();
