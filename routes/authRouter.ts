@@ -1,6 +1,6 @@
 import express from "express";
 const router = express.Router();
-import reqBodyValidation from "../middleware/requestBodyValidation";
+import { reqBodyValidation } from "../utils/middleware";
 import { signUpSchema, logInSchema } from "../utils/reqBodySchemas";
 import { signUpUser, logInUser } from "../controllers/authController";
 

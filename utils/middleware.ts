@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { customError } from "../utils/customError";
+import Joi from "joi";
 
 dotenv.config();
 
@@ -25,4 +26,16 @@ export function isAuthenticated(
       }
     });
   }
+}
+
+export function reqBodyValidation(schema: Joi.ObjectSchema<any>) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      next(new customError(400, error.details[0].message));
+    } else {
+      req.body = value;
+      next();
+    }
+  };
 }

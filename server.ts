@@ -7,12 +7,14 @@ const app = express();
 // Routers
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
+import adminRouter from "./routes/adminRouter";
 
 // Parses incoming requests with json as payload
 app.use(express.json());
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 
 // Error handling middleware
 app.use((err: customError, req: Request, res: Response, next: NextFunction) => {

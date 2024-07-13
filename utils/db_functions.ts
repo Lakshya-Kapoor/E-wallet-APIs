@@ -9,6 +9,7 @@ export const createWallet = async (client: PoolClient): Promise<Wallet> => {
     );
     return walletResult.rows[0];
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to create wallet");
   }
 };
@@ -29,6 +30,7 @@ export const createUser = async (
     );
     return userResult.rows[0];
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to create user");
   }
 };
@@ -44,6 +46,7 @@ export const getUser = async (
     );
     return userResult.rows[0];
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to get user");
   }
 };
@@ -62,6 +65,7 @@ export const getUserAndWallet = async (
     );
     return userWalletResult.rows[0];
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to get user and wallet");
   }
 };
@@ -80,6 +84,7 @@ export const updateBalance = async (
       [newBalance, wallet_id]
     );
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to update wallet balance");
   }
 };
@@ -102,6 +107,7 @@ export const logTransaction = async (
       [sender_phone_no, receiver_phone_no, amount, status, message]
     );
   } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to log transaction");
   }
 };
@@ -118,6 +124,35 @@ export const getTransactions = async (client: PoolClient, phone_no: number) => {
     );
     return transactionResult.rows;
   } catch (err) {
+    console.log(err);
+    throw new databaseError("Failed to get transactions");
+  }
+};
+
+export const getTransactionAggregate = async (
+  client: PoolClient,
+  phone_no: number
+) => {
+  try {
+    const debitResult = await client.query(
+      `
+        SELECT SUM(amount) FROM transactions
+        WHERE sender_phone_no = $1 AND transaction_status = TRUE
+      `,
+      [phone_no]
+    );
+    const creditResult = await client.query(
+      `
+        SELECT SUM(amount) FROM transactions
+        WHERE receiver_phone_no = $1 AND transaction_status = TRUE
+      `,
+      [phone_no]
+    );
+    const debited = Number(debitResult.rows[0].sum);
+    const credited = Number(creditResult.rows[0].sum);
+    return { debited, credited };
+  } catch (err) {
+    console.log(err);
     throw new databaseError("Failed to get transactions");
   }
 };

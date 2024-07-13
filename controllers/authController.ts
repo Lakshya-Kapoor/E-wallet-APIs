@@ -32,7 +32,7 @@ export const signUpUser = async (
     );
     await client.query("COMMIT");
 
-    res.status(200).send("User signed up successfully");
+    res.status(201).json({ success: "User signed up successfully" });
   } catch (err) {
     await client!.query("ROLLBACK");
     next(throwError(err));
