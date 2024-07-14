@@ -32,7 +32,9 @@ export function reqBodyValidation(schema: Joi.ObjectSchema<any>) {
   return (req: Request, res: Response, next: NextFunction) => {
     const { error, value } = schema.validate(req.body);
     if (error) {
-      next(new customError(400, error.details[0].message));
+      next(
+        new customError(400, `Invalid req body: ${error.details[0].message}`)
+      );
     } else {
       req.body = value;
       next();
