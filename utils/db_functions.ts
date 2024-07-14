@@ -86,16 +86,16 @@ export const getUserAndWallet = async (
 
 export const updateBalance = async (
   client: PoolClient,
-  newBalance: number,
+  amount: number,
   wallet_id: number
 ) => {
   try {
     await client.query(
       `UPDATE wallet
-      SET balance = $1
+      SET balance = balance + $1
       WHERE wallet_id = $2
       `,
-      [newBalance, wallet_id]
+      [amount, wallet_id]
     );
   } catch (err) {
     console.log(err);

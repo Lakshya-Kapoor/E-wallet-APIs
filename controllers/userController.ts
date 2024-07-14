@@ -61,12 +61,13 @@ export const payUser = async (
       throw new customError(422, "Insufficient balance");
     }
 
-    /* Debit sender */
-    const senderBalace = sender.balance! - amount;
-    await updateBalance(client, senderBalace, sender.wallet_id);
-    /* Credit receiver */
-    const receiverBalace = receiver.balance! + amount;
-    await updateBalance(client, receiverBalace, receiver.wallet_id);
+    if (phone_no < receiver_phone_no) {
+      await updateBalance(client, -amount, sender.wallet_id);
+      await updateBalance(client, amount, receiver.wallet_id);
+    } else {
+      await updateBalance(client, amount, receiver.wallet_id);
+      await updateBalance(client, -amount, sender.wallet_id);
+    }
 
     /* Log successful transaction */
     await logTransaction(
