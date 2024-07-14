@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { PoolClient } from "pg";
 import pool from "../config/db";
-import { getTransactionAggregate } from "../utils/db_functions";
+import { getTransactionAggregate, getUsers } from "../utils/db_functions";
 import { getUserAndWallet } from "../utils/db_functions";
 import throwError from "../utils/throwError";
 
@@ -28,6 +28,45 @@ export const verifyUserTransactions = async (
       real_balance: balance,
       expected_balance: 1000 + credited - debited,
     });
+  } catch (err) {
+    next(throwError(err));
+  } finally {
+    client!.release();
+  }
+};
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let client: PoolClient;
+  try {
+    client = await pool.connect();
+
+    const users = await getUsers(client);
+
+    res.json(users);
+  } catch (err) {
+    next(throwError(err));
+  } finally {
+    client!.release();
+  }
+};
+
+export const getUserData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { phone_no } = req.params;
+  let client: PoolClient;
+  try {
+    client = await pool.connect();
+
+    const user = await getUserAndWallet(client, Number(phone_no));
+
+    res.json(user);
   } catch (err) {
     next(throwError(err));
   } finally {

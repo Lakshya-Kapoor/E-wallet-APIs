@@ -35,6 +35,20 @@ export const createUser = async (
   }
 };
 
+export const getUsers = async (client: PoolClient): Promise<User[]> => {
+  try {
+    const userResult = await client.query(
+      `SELECT * FROM users 
+      JOIN wallet ON users.wallet_id = wallet.wallet_id
+      `
+    );
+    return userResult.rows;
+  } catch (err) {
+    console.log(err);
+    throw new databaseError("Failed to get users");
+  }
+};
+
 export const getUser = async (
   client: PoolClient,
   phone_no: number
