@@ -60,7 +60,14 @@ export const logInUser = async (
       throw new customError(401, "Incorrect password");
     }
 
-    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!);
+    /* Don't store sensitive data in payload as it can be decoded easily */
+    const jwtPayload = {
+      phone_no: user.phone_no,
+      user_name: user.user_name,
+      wallet_id: user.wallet_id,
+    };
+
+    const accessToken = jwt.sign(jwtPayload, process.env.ACCESS_TOKEN_SECRET!);
     res.json({ accessToken });
   } catch (err) {
     next(throwError(err));
