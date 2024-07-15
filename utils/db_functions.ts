@@ -147,9 +147,8 @@ export const getTransactions = async (
         `
         SELECT * FROM transactions
         WHERE (sender_phone_no = $1 OR receiver_phone_no = $1)
-        AND transaction_date BETWEEN $2 AND ($3::date + INTERVAL '1 day')
+        AND (transaction_date BETWEEN $2 AND ($3::date + INTERVAL '1 day'))
         ORDER BY transaction_date DESC
-        LIMIT 10
       `,
         [phone_no, queryData.start_date, queryData.end_date]
       );
@@ -158,7 +157,7 @@ export const getTransactions = async (
         `
         SELECT * FROM transactions
         WHERE (sender_phone_no = $1 OR receiver_phone_no = $1)
-        AND transaction_date BETWEEN $2 AND $3 
+        AND (transaction_date BETWEEN $2 AND $3)
         ORDER BY transaction_date DESC
       `,
         [phone_no, queryData.start_time, queryData.end_time]
