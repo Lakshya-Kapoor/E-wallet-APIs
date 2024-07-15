@@ -1,5 +1,5 @@
 import { User, Wallet } from "../types/customTypes";
-import { Pool, PoolClient } from "pg";
+import { PoolClient } from "pg";
 import { databaseError } from "./customError";
 
 export const createWallet = async (client: PoolClient): Promise<Wallet> => {
@@ -9,7 +9,7 @@ export const createWallet = async (client: PoolClient): Promise<Wallet> => {
     );
     return walletResult.rows[0];
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to create wallet");
   }
 };
@@ -30,7 +30,7 @@ export const createUser = async (
     );
     return userResult.rows[0];
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to create user");
   }
 };
@@ -44,7 +44,7 @@ export const getUsers = async (client: PoolClient): Promise<User[]> => {
     );
     return userResult.rows;
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to get users");
   }
 };
@@ -60,7 +60,7 @@ export const getUser = async (
     );
     return userResult.rows[0];
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to get user");
   }
 };
@@ -79,7 +79,7 @@ export const getUserAndWallet = async (
     );
     return userWalletResult.rows[0];
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to get user and wallet");
   }
 };
@@ -98,7 +98,7 @@ export const updateBalance = async (
       [amount, wallet_id]
     );
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to update wallet balance");
   }
 };
@@ -121,24 +121,52 @@ export const logTransaction = async (
       [sender_phone_no, receiver_phone_no, amount, status, message]
     );
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to log transaction");
   }
 };
 
-export const getTransactions = async (client: PoolClient, phone_no: number) => {
+export const getTransactions = async (
+  client: PoolClient,
+  phone_no: number,
+  queryData?: any
+) => {
   try {
-    const transactionResult = await client.query(
-      `
-      SELECT * FROM transactions
-      WHERE sender_phone_no = $1 OR receiver_phone_no = $1
-      ORDER BY transaction_date DESC
+    let transactionResult;
+    if (!queryData) {
+      transactionResult = await client.query(
+        `
+          SELECT * FROM transactions
+          WHERE (sender_phone_no = $1 OR receiver_phone_no = $1)
+          ORDER BY transaction_date DESC
+        `,
+        [phone_no]
+      );
+    } else if (queryData.start_date && queryData.end_date) {
+      transactionResult = await client.query(
+        `
+        SELECT * FROM transactions
+        WHERE (sender_phone_no = $1 OR receiver_phone_no = $1)
+        AND transaction_date BETWEEN $2 AND ($3::date + INTERVAL '1 day')
+        ORDER BY transaction_date DESC
+        LIMIT 10
       `,
-      [phone_no]
-    );
-    return transactionResult.rows;
+        [phone_no, queryData.start_date, queryData.end_date]
+      );
+    } else if (queryData.start_time && queryData.end_time) {
+      transactionResult = await client.query(
+        `
+        SELECT * FROM transactions
+        WHERE (sender_phone_no = $1 OR receiver_phone_no = $1)
+        AND transaction_date BETWEEN $2 AND $3 
+        ORDER BY transaction_date DESC
+      `,
+        [phone_no, queryData.start_time, queryData.end_time]
+      );
+    }
+    return transactionResult!.rows;
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to get transactions");
   }
 };
@@ -166,7 +194,7 @@ export const getTransactionAggregate = async (
     const credited = Number(creditResult.rows[0].sum);
     return { debited, credited };
   } catch (err) {
-    console.log(err);
+    console.log("Logged in db_function:\n", err);
     throw new databaseError("Failed to get transactions");
   }
 };

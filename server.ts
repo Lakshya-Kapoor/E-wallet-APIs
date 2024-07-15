@@ -12,13 +12,16 @@ import adminRouter from "./routes/adminRouter";
 // Parses incoming requests with json as payload
 app.use(express.json());
 
+// Routes
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/admin", adminRouter);
 
 // Error handling middleware
 app.use((err: customError, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
+  if (!(err instanceof customError)) {
+    console.log("Logged in server.ts: \n", err);
+  }
   let { status = 500, message = "Something went wrong" } = err;
   res.status(status).json({ error: message });
 });

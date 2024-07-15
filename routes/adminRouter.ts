@@ -3,6 +3,7 @@ const router = express.Router();
 import {
   getAllUsers,
   getUserData,
+  getUserTransactions,
   verifyUserTransactions,
 } from "../controllers/adminController";
 
@@ -14,5 +15,8 @@ router.get("/users/:phone_no", getUserData);
 
 /* Verify if user transactions are valid */
 router.get("/verify_transactions/:phone_no", verifyUserTransactions);
+
+/* Get transactions */
+router.get("/transactions/:phone_no", getUserTransactions);
 
 export default router;
