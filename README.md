@@ -1,5 +1,9 @@
 # Wallet API
 
+## Preface
+
+The motivation was to create a scalable wallet transaction system that allows users to pay each other with their phone numbers. The API has been tested for 100 concurrent users, performing transactions simultaneously with the help of postman. All db transactions are acid compliant and the database deadlocks problem is solved by prioritizing debit and credit requests on the basis of the phone number of the users involved.
+
 ## Introduction
 
 This is an API that maintains user wallets and allows inter wallet transactions between users. The transactions are made possible with acid compliant db transactions. To try the API yourself [click here](#getting-started).
